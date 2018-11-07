@@ -73,6 +73,70 @@ return 993322;
 	}
 }
 
+func TestIdentifierExpression(t *testing.T) {
+	input := "foobar;"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParseErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has invalid number of statements. actual=%d", len(program.Statements))
+	}
+
+	expressionStmt, isStructType := program.Statements[0].(*ast.ExpressionStatement)
+	if !isStructType {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	ident, isStructType := expressionStmt.Expression.(*ast.Identifier)
+	if !isStructType {
+		t.Fatalf("exp not *ast.Identifier. got=%T", expressionStmt.Expression)
+	}
+
+	if ident.Value != "foobar" {
+		t.Errorf("ident.Value not %s. got=%s", "foobar", ident.Value)
+	}
+
+	if ident.TokenLiteral() != "foobar" {
+		t.Errorf("ident.TokenLiteral not %s. go=%s", "foobar", ident.TokenLiteral())
+	}
+}
+
+func TestIntegerLiteralExpression(t *testing.T) {
+	input := "5;"
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParseErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has invalid number of statements. actual=%d", len(program.Statements))
+	}
+
+	expressionStmt, isStructType := program.Statements[0].(*ast.ExpressionStatement)
+
+	if !isStructType {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	literal, isStructType := expressionStmt.Expression.(*ast.IntegerLiteral)
+
+	if !isStructType {
+		t.Fatalf("exp not *ast.IntegerLiteral. got=%T", expressionStmt.Expression)
+	}
+
+	if literal.Value != 5 {
+		t.Errorf("literal.Value not %d. got=%d", 5, literal.Value)
+	}
+
+	if literal.TokenLiteral() != "5" {
+		t.Errorf("literal.TokenLiteral not %s. go=%s", "5", literal.TokenLiteral())
+	}
+}
+
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
