@@ -1,10 +1,21 @@
 package token
 
+import "bytes"
+
 type TokenType string
 
 type Token struct {
 	Type    TokenType
 	Literal string
+}
+
+func (token Token) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("Literal: " + token.Literal)
+	out.WriteString(" Type: " + string(token.Type))
+
+	return out.String()
 }
 
 const (
